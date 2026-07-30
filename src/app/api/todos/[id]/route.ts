@@ -1,4 +1,5 @@
 import Todo from "@/models/Todo";
+import { TTodoDB } from "@/types";
 import { connectToDb } from "@/utils/connectToDb";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,7 +10,7 @@ export const GET = async (
   try {
     await connectToDb();
     const { id } = await params;
-    const todo = await Todo.findById(id);
+    const todo: TTodoDB | null = await Todo.findById(id);
     if (!todo)
       NextResponse.json({ message: "Task not found" }, { status: 404 });
 
@@ -33,12 +34,13 @@ export const PUT = async (
   try {
     await connectToDb();
     const { id } = await params;
-    const todo = await Todo.findById(id);
-    if (!todo)
+    const todo: TTodoDB | null = await Todo.findById(id);
+    if (!todo) {
       NextResponse.json({ message: "Task not found" }, { status: 404 });
-
-    todo.isDone = !todo.isDone;
-    await todo.save();
+    } else {
+      todo.isDone = !todo.isDone;
+      await todo.save();
+    }
 
     return NextResponse.json({ todo }, { status: 200 });
   } catch (error) {
@@ -60,7 +62,7 @@ export const DELETE = async (
   try {
     await connectToDb();
     const { id } = await params;
-    const todo = await Todo.findByIdAndDelete(id);
+    const todo: TTodoDB | null = await Todo.findByIdAndDelete(id);
     if (!todo)
       NextResponse.json({ message: "Task not found" }, { status: 404 });
 

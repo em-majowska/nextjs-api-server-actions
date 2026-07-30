@@ -2,23 +2,25 @@
 
 import Todo from "@/models/Todo";
 import { TTodoDB } from "@/types";
+import { connectToDb } from "@/utils/connectToDb";
 import { revalidatePath } from "next/cache";
 
-export const deleteTodo = async (todo: TTodoDB) => {
+export const deleteTodo = async (id: string) => {
   try {
-    await Todo.findOneAndDelete({ _id: todo._id });
+    await connectToDb();
+
+    // const todo: TTodoDB | null = await Todo.findByIdAndDelete(id);
+    const todo: TTodoDB | null = await Todo.findById(id);
+    if (!todo) throw new Error("Task not found");
+
+    todo.deleteOne();
 
     revalidatePath("/list");
   } catch (error) {
     if (error instanceof Error) {
-      switch (error.message) {
-        case "Missing title":
-          return "Paramètre manquant";
-        default:
-          return "Une erreur est survenue";
-      }
+      throw new Error(error.message);
     } else {
-      return "Une erreur est survenue";
+      throw new Error("Une erreur est survenue");
     }
   }
 };

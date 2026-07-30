@@ -23,7 +23,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await connectToDb();
+  // await connectToDb();
   return (
     <html
       lang="en"

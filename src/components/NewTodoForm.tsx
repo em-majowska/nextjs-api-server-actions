@@ -1,7 +1,7 @@
 "use client";
 
+import { createTodo } from "@/queries/createTodo";
 // import { createTodo } from "@/actions/createTodo";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
@@ -11,30 +11,8 @@ const NewTodoForm = () => {
 
   const router = useRouter();
   const [error, formAction, isPending] = useActionState(
-    async (_currentError: string | null, formData: FormData) => {
-      try {
-        const title = formData.get("title");
-        if (!title) throw new Error("Missing title");
-
-        await axios.post(`${process.env.NEXT_PUBLIC_LOCAL_API_URL}/todos`, {
-          title,
-          isDone: false,
-        });
-        router.refresh();
-        return null;
-      } catch (error) {
-        if (error instanceof Error) {
-          switch (error.message) {
-            case "Missing title":
-              return "Paramètre manquant";
-            default:
-              return "Une erreur est survenue";
-          }
-        } else {
-          return "Une erreur est survenue";
-        }
-      }
-    },
+    (currentError: null | string, formData: FormData) =>
+      createTodo(router)(currentError, formData),
     null,
   );
 

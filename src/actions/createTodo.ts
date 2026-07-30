@@ -1,13 +1,16 @@
 "use server";
 
 import Todo from "@/models/Todo";
+import { connectToDb } from "@/utils/connectToDb";
 import { revalidatePath } from "next/cache";
 
 export const createTodo = async (
-  _currentError: null | string,
+  currentError: null | string,
   formData: FormData,
 ) => {
   try {
+    await connectToDb();
+
     const title = formData.get("title");
     if (!title) throw new Error("Missing title");
 
