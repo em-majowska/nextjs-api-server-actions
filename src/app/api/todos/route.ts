@@ -27,7 +27,10 @@ export const POST = async (request: NextRequest) => {
     await connectToDb();
 
     const body: { title: string } = await request.json();
-    const newTodo: TTodoDB = new Todo(body);
+
+    const newTodo = await Todo.create(body);
+    // const newTodo: TTodoDB = new Todo(body);
+    // await newTodo.save();
 
     return NextResponse.json(newTodo, { status: 201 });
   } catch (error) {
